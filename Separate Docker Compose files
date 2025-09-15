@@ -1,0 +1,88 @@
+Solution 2:
+✅Final Structure: 
+myapp/
+  api/
+    main.py
+    requirements.txt
+    Dockerfile
+  ui/
+    index.html
+    env-config.js.template
+    Dockerfile
+  docker-compose.yml            
+  docker-compose.dev.yml        
+  docker-compose.master.yml    
+  docker-compose.feature-azar.yml  
+
+✅Base docker-compose.yml:
+ version: "3.9"
+services:
+  api:
+    build: ./api
+    image: myapp-api:${TAG:-latest}
+    container_name: myapp-api-${TAG:-latest}
+    environment:
+      - TAG=${TAG:-latest}
+    ports:
+      - "${API_PORT:-8000}:8000"
+
+  ui:
+    build: ./ui
+    image: myapp-ui:${TAG:-latest}
+    container_name: myapp-ui-${TAG:-latest}
+    environment:
+      - API_URL=http://localhost:${API_PORT:-8000}
+      - UI_VERSION=${TAG:-latest}
+    ports:
+      - "${UI_PORT:-3000}:80"
+
+✅dev: docker-compose.dev.yml:
+ services:
+  api:
+    environment:
+      - TAG=dev
+    ports:
+      - "8001:8000"
+
+  ui:
+    environment:
+      - TAG=dev
+      - API_URL=http://localhost:8001
+    ports:
+      - "3001:80"
+✅ master:docker-compose.master.yml:
+ services:
+  api:
+    environment:
+      - TAG=master
+    ports:
+      - "8002:8000"
+
+  ui:
+    environment:
+      - TAG=master
+      - API_URL=http://localhost:8002
+    ports:
+      - "3002:80"
+
+✅ Feature/azar: docker-compose.feature-amin.yml:
+ services:
+  api:
+    environment:
+      - TAG=feature-azar
+    ports:
+      - "8003:8000"
+
+  ui:
+    environment:
+      - TAG=feature-azar
+      - API_URL=http://localhost:8003
+    ports:
+      - "3003:80"
+
+RUN in Dev:
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+RUN in master:
+docker-compose -f docker-compose.yml -f docker-compose.master.yml up -d --build
+RUN in Feature azar:
+docker-compose -f docker-compose.yml -f docker-compose.feature-amin.yml up -d --build
