@@ -5,7 +5,7 @@
 
 1-2 dev → shared development environment
 
-1-3 feature/* → per-developer branches (e.g. feature/amin, feature/sara)
+1-3 feature/* → per-developer branches (e.g. feature/amin, feature/azar)
 If we want for python:
 # create a new feature branch for Azar
 git checkout -b feature/azar
